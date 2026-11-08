@@ -1,0 +1,36 @@
+# 方案 A 的 POC 只需要一个 PostgreSQL。
+#
+# 镜像选 pgvector/pgvector:pg17 有两个原因：
+#   1. 版本和计划文档约定一致（PostgreSQL 17）；
+#   2. 后续 B/C 方案要装 `vector` 扩展，换镜像不如一开始就用同款。
+# 方案 A 本身**不依赖** pgvector 扩展，也不需要在 PG 里存 embedding。
+services:
+  postgres:
+    # 任何 PG 17 镜像都行。这里默认钉住 0.8.6-pg17：它在本仓库环境里可用，
+    # 离线/内网环境不必重新拉 `pg17` 标签（可用 ADK_RAG_PG_IMAGE 覆盖）。
+    image: ${ADK_RAG_PG_IMAGE:-pgvector/pgvector:0.8.6-pg17}
+    container_name: adk-rag-pg
+    environment:
+      POSTGRES_USER: ${PG_USER:-adk_rag}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-adk_rag}
+      POSTGRES_DB: ${PG_DATABASE:-adk_rag}
+      # 英文 FTS 只依赖内置的 `english` 配置，无需额外 locale/扩展。
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      # 默认用 5433，避免和本机/其他示例的 5432 冲突；改 ADK_RAG_PG_PORT 即可。
+      - "${ADK_RAG_PG_PORT:-5433}:5432"
+    volumes:
+      - adk-rag-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-adk_rag} -d ${PG_DATABASE:-adk_rag}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    command:
+      # 小 POC：把默认的 bgwriter/fsync 参数留在默认值即可，不做过早调优。
+      - "postgres"
+      - "-c"
+      - "log_min_duration_statement=200"
+
+volumes:
+  adk-rag-pgdata:

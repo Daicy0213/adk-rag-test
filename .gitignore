@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.uv-cache/
+
+# 环境变量：.env.example 是模板，.env 是本机凭据
+.env
+
+# 评估产物（保留目录结构，产物不入库）
+eval/reports/**
+!eval/reports/.gitkeep
+
+# 本地临时文件
+*.tmp

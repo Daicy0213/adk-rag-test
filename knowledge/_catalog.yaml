@@ -1,0 +1,14 @@
+version: 1
+# 全域清单：新增域只需加目录 + 这个条目 + _domain.yaml。
+# 运行时 ingest 会把这里的信息同步进数据库 domain 表（card JSONB），应用不读文件系统。
+domains:
+  deposit:
+    name: Deposits and Certificates of Deposit
+    description: >
+      Retail deposit products, certificates of deposit, early withdrawal,
+      interest calculation, required documents and product terms.
+    acl_groups:
+      - role:retail_business
+      - role:branch_teller
+      - role:private_banking
+    default_classification: internal

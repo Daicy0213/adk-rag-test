@@ -1,0 +1,35 @@
+# 域卡片：同时服务路由、检索过滤与可解释性（Research 4.2.2）。
+# ingest 时整体写入 domain.card，运行时不读文件。
+id: deposit
+name: Deposits and Certificates of Deposit
+description: >
+  Retail deposit products, large-denomination certificates of deposit,
+  early withdrawal and early redemption, interest and tier rules,
+  required documents, fees and escalation.
+scope_in:
+  - Personal deposits and certificates of deposit
+  - Large-denomination CDs
+  - Early withdrawal and early redemption
+  - Interest calculation and tier rules
+  - Required documents and processing steps
+scope_out:
+  - Corporate deposits
+  - Structured deposit derivatives
+  - Cross-border remittance reporting (owned by the FX domain)
+keywords:
+  - large-denomination CD
+  - early withdrawal
+  - early redemption
+  - tiered interest
+  - power of attorney
+  - cooling-off period
+  - withdrawal fee
+sample_queries:
+  - What documents are required for early withdrawal of a large-denomination CD?
+  - What is the difference between early redemption and early withdrawal?
+  - What does Circular [2022] No. 5 require for early withdrawal?
+owner: Retail Banking
+acl_groups:
+  - role:retail_business
+  - role:branch_teller
+default_classification: internal

@@ -1,0 +1,42 @@
+# 方案 A POC 的默认配置（对应计划文档 10.5）。
+# 覆盖顺序：内置默认值 < 本文件 < 环境变量（PG_DSN / ADK_RAG_CONFIG / ADK_RAG_ROOT）。
+postgres:
+  dsn_env: PG_DSN
+  # 没设置 PG_DSN 时的兜底值，与 docker-compose.yml 的默认值一致。
+  default_dsn: postgresql://adk_rag:adk_rag@localhost:5433/adk_rag
+  schema: public
+
+retrieval:
+  # 两路召回各自过采样，再融合、聚合
+  fts_top_k: 80
+  exact_top_k: 20
+  final_parents: 8
+  per_domain_parents: 4
+  max_evidence_tokens: 6000
+  # ts_rank_cd 的 normalization flag，不是阈值
+  ts_rank_normalization: 32
+  # RRF：score = Σ w / (rrf_k + rank)
+  rrf_k: 60
+  # exact 通道权重。计划建议 exact 稍高，但默认 1.0 先做基线，调参见 README。
+  exact_boost: 1.0
+  # 父级聚合的分数：max（默认，取最强子块）或 sum
+  parent_score: max
+  # FTS 的 AND 语义过严时，降级为 OR 再召回一次（计划 8.5「去掉部分词」）
+  or_fallback_min_candidates: 3
+  timeouts_ms:
+    query: 1500
+
+ingest:
+  knowledge_root: knowledge
+  default_doc_type: policy
+  # child chunk：目标 350 tokens，上限 500，下限 100（计划 9.3）
+  target_chunk_tokens: 350
+  max_chunk_tokens: 500
+  min_chunk_tokens: 100
+  overlap_tokens: 40
+  # 长列表/表格按 6 项（行）分组，组内重复引导句/表头
+  list_items_per_chunk: 6
+  table_rows_per_chunk: 6
+  # parent section 的参考长度，只用于质量报告，不截断 section.text
+  parent_target_tokens: 1000
+  parent_max_tokens: 1200

@@ -1,0 +1,12 @@
+# 消融实验：关闭 exact 通道（对应计划 11.5 的 A2 反面实验）
+#
+# 只保留 FTS 一路，用于观察 exact 通道对文号/产品代码类问题的贡献。
+# 用法：
+#   uv run python -m adk_rag.eval --golden eval/golden.jsonl --domains deposit \
+#     --config eval/ablation/a1-no-exact.yaml --report-dir eval/reports/ablation
+#
+# exact_boost: 0.0 会让 RRF 融合跳过 exact 通道（权重 <= 0 直接忽略），
+# 但 exact_terms 仍然照常写入索引——对比的是"用不用这条通道"，
+# 而不是"有没有抽到精确词"。
+retrieval:
+  exact_boost: 0.0
